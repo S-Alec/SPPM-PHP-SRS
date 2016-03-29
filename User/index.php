@@ -1,6 +1,12 @@
 <?php
   //Buffer larger content areas like the main page content
   ob_start();
+  session_start();
+  //check session
+  if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
+    //redirect
+    header ("Location: index.php");
+  }
 ?>
 <div class="row">
     <div class="col-lg-12">
