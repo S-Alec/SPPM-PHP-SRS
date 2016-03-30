@@ -112,7 +112,7 @@ class CreateTable
 	{
 		$create = "CREATE TABLE IF NOT EXISTS SALEITEM (
 			pid 		INT NOT NULL,
-			salesprice decimal(3,3) NOT NULL,
+			salesprice decimal(6,3) NOT NULL,
 			stockamount INT(5) NOT NULL,
 
 			FOREIGN KEY (pid) REFERENCES PRODUCT (pid),
