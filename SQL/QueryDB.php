@@ -17,5 +17,27 @@ class QueryDB
 
 	return $query;
   }
+
+  /**
+   *  Get all items that match a search term
+   */
+  public static function getMatchingProducts( $aSearchTerm )
+  {
+  	$query = "SELECT SALEITEM.pid, PRODUCT.barcode, PRODUCT.pname, PRODUCT.brand, PRODUCT.category, PRODUCT.description, SALEITEM.salesprice, SALEITEM.stockamount
+
+  		FROM SALEITEM
+
+  		INNER JOIN PRODUCT AS PRODUCT
+  		ON SALEITEM.pid = PRODUCT.pid
+
+  		WHERE (PRODUCT.barcode  = '$aSearchTerm') OR 
+  			  (PRODUCT.brand    = '$aSearchTerm') OR 
+  			  (PRODUCT.pname    = '$aSearchTerm') OR 
+  			  (PRODUCT.category = '$aSearchTerm')
+
+  		ORDER BY PRODUCT.pname";
+
+  		return $query;
+  }
 }
 ?>
