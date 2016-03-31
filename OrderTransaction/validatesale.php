@@ -118,6 +118,7 @@
   		}
   		else
   		{
+  			echo $lInsert->insertReceipt($lTotal);
   			printf("Query Failed: %s\n", $mysqli->error);
   			exit();
   		}
@@ -127,6 +128,7 @@
 	  		/* Insert transaction into transaction table */
 	  		if( !$mysqli->query($lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i])) )
 	  		{
+	  			echo $lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i]);
 	  			printf("Query Failed: %s\n", $mysqli->error);
   				exit();
 	  		}

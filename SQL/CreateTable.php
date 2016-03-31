@@ -160,7 +160,7 @@ class CreateTable
 
 			FOREIGN KEY (pid) REFERENCES PRODUCT (pid),
 			FOREIGN KEY (receiptcode) REFERENCES RECEIPT (receiptcode),
-			PRIMARY KEY (receiptcode)
+			PRIMARY KEY (receiptcode, pid)
 		);";
 
 		return $create;
