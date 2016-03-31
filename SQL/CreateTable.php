@@ -134,7 +134,7 @@ class CreateTable
 		$create = "CREATE TABLE IF NOT EXISTS RECEIPT (
 			receiptcode 	INT AUTO_INCREMENT NOT NULL,
 			transactiondate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			totalspent 		decimal(5,3) NOT NULL,
+			totalspent 		decimal(10,3) NOT NULL,
 
 			PRIMARY KEY (receiptcode)
 		);";
@@ -155,7 +155,7 @@ class CreateTable
 		$create = "CREATE TABLE IF NOT EXISTS TRANSACTION (
 			receiptcode INT NOT NULL,
 			pid 		INT NOT NULL,
-			salesprice 	DECIMAL(3,3),
+			salesprice 	DECIMAL(6,3),
 			quantity 	INT(3) NOT NULL,
 
 			FOREIGN KEY (pid) REFERENCES PRODUCT (pid),

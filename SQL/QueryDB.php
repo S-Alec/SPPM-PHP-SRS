@@ -39,5 +39,17 @@ class QueryDB
 
   		return $query;
   }
+
+  /**
+   *	Get product details given product id
+   */
+  public static function getProductPriceQuantity($aPid)
+  {
+  	$query = "SELECT pid, salesprice, stockamount
+  		FROM SALEITEM
+  		WHERE pid = '$aPid'";
+
+  	return $query;
+  }
 }
 ?>

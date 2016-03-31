@@ -1,10 +1,10 @@
 <?php
-  session_start();
+	session_start();
 
   /* Check Loggedin session */
   if( !isset($_SESSION['loggedin']) )
   {
-    header("location: ../");
+  	header("location: ../");
   }
   else
   {
@@ -112,7 +112,9 @@
         </div>
 
         <hr />
-        
+        <div id="error">
+        </div>
+
         <!-- Order Cart -->
         <div class="panel panel-default">
           <div class="panel-heading">Order Cart-</div>
@@ -238,7 +240,7 @@
           var lQuantity = 0;
 
           // Scan each row of the Cart table
-          $('#cart tr').each(function(rowIndex) {
+          $('#cart > tbody > tr').each(function(rowIndex) {
             lPid = $(this).attr('id');
             
             lPrice = parseFloat($('#cprice' + lPid).html());
@@ -259,36 +261,55 @@
          *  Insert transaction into DB and present receipt
          *	to user
          */
-         function printReceipt()
-         {
-           var lPid;
-           var lPostData = [];
+        function printReceipt()
+        {
+         	var lPid;
+          var lPostData = [];
 
-           // Scan each row of the Cart table
-           $('#cart tr').each(function(rowIndex) {
-             
-             lPid = $(this).attr('id');
-             lQuantity = parseFloat($('#cqty' + lPid).val());
+          // Disable the Print Receipt button
+          $('#print').prop('disable', true);
 
-             if( !Number.isNaN(parseInt(lPid)) )
-             {
-             	lPostData.push( {"pid":lPid, "quantity":lQuantity});
-             }
-           });
-           
-           // Validate items can be purchased
-           $.ajax({
-             method: "POST",
-             url   : "validatesale.php",
-             async : true,
-             data  : { json: JSON.stringify(lPostData) }
-           }).done(function( aValid ) {
+          // Scan each row of the Cart table
+          $('#cart tr').each(function(rowIndex) {
+            
+            lPid = $(this).attr('id');
+            lQuantity = parseFloat($('#cqty' + lPid).val());
 
-             // Show pdf version of receipt
-           	 
-           });	
-         }
+            if( !Number.isNaN(parseInt(lPid)) )
+            {
+            	lPostData.push( {"pid":lPid, "quantity":lQuantity});
+            }
+          });
+          
+          // Validate items can be purchased
+          $.ajax({
+            method: "POST",
+            url   : "validatesale.php",
+            async : true,
+            data  : { json: JSON.stringify(lPostData) }
+          }).done(function( aErrorString ) {
 
+          	if( aErrorString != "" )
+          	{
+          		// Display Errors
+          		$('#error').html("<h3>Errors Detected</h3><ul>"+aErrorString+"</ul>");
+          		$('#error').addClass("alert alert-danger");
+          	}
+          	else
+          	{
+          		// Remove Errors
+          		$('#error').html("");
+          		$('#error').removeClass("alert alert-danger");
+
+          		// Show pdf version of receipt
+          	}
+                    	 
+
+						// Enable the print button
+						$('#print').prop('disable', false);						
+          });
+        }
+        
       </script>
     </body>
   </html>
