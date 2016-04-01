@@ -125,6 +125,8 @@ class CreateTable
 	/**
 	 *	Create table Receipt Table
 	 *	Field Descriptions-
+	 *		uid 			: uid for user that processed
+	 *						  transaction
 	 *		receiptcode 	: transaction code auto generated
 	 *		transactiondate : date time when item was inserted
 	 *		totalspent		: total amount spent on all products
@@ -133,9 +135,11 @@ class CreateTable
 	{
 		$create = "CREATE TABLE IF NOT EXISTS RECEIPT (
 			receiptcode 	INT AUTO_INCREMENT NOT NULL,
+			uid 			INT NOT NULL,
 			transactiondate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			totalspent 		decimal(10,3) NOT NULL,
 
+			FOREIGN KEY (uid) REFERENCES USER (uid),
 			PRIMARY KEY (receiptcode)
 		);";
 

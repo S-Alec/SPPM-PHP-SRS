@@ -46,6 +46,7 @@
 	  	/* Verify Password */
 		if( password_verify($lPassword, $row['password']) )
 		{
+		  $_SESSION['loggedin']['uid'] = $row['uid'];
 		  $_SESSION['loggedin']['username'] = $row['username'];
 		  $_SESSION['loggedin']['role'] = $row['role'];
 		  $_SESSION['loggedin']['lname'] = $row['lname'];
@@ -65,7 +66,7 @@
 	}
 	else
 	{
-	  printf("Connection Failed: %s\n", $mysqli->connect_error); 
+	 printf("Query Failed: %s\n", $mysqli->error); 
 	}
 
 	echo $lReturn;
