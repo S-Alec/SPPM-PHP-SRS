@@ -7,7 +7,7 @@
 class UpdateDB
 {
 	/**
-	 *
+	 *	Deduct stock for a particular sales item
 	 */
 	public static function deductStockFromSalesTable($aPid, $aQuantity)
 	{

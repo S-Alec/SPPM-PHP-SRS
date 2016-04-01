@@ -267,7 +267,7 @@
           var lPostData = [];
 
           // Disable the Print Receipt button
-          $('#print').prop('disable', true);
+          $('#print').prop('disabled', true);
 
           // Scan each row of the Cart table
           $('#cart tr').each(function(rowIndex) {
@@ -287,13 +287,18 @@
             url   : "validatesale.php",
             async : true,
             data  : { json: JSON.stringify(lPostData) }
-          }).done(function( aErrorString ) {
+          }).done(function( aJSONString ) {
 
-          	if( aErrorString != "" )
+          	var lJson = jQuery.parseJSON(aJSONString);
+
+          	if( !lJson.valid )
           	{
           		// Display Errors
-          		$('#error').html("<h3>Errors Detected</h3><ul>"+aErrorString+"</ul>");
+          		$('#error').html("<h3>Errors Detected</h3><ul>"+ lJson.errors +"</ul>");
           		$('#error').addClass("alert alert-danger");
+          		
+          		// Enable the print button
+							$('#print').prop('disabled', false);
           	}
           	else
           	{
@@ -301,15 +306,15 @@
           		$('#error').html("");
           		$('#error').removeClass("alert alert-danger");
 
-          		// Show pdf version of receipt
-          	}
-                    	 
+          		// Download printed receipt
+              window.open('createReceipt.php?receiptcode='+lJson.receiptcode, '_blank');
 
-						// Enable the print button
-						$('#print').prop('disable', false);						
+          		// Reload the page from server
+          		document.location.reload(true);
+          	}						
           });
         }
-        
+
       </script>
     </body>
   </html>

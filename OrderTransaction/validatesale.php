@@ -72,7 +72,7 @@
   	/* Validate Transactions */
   	for( $i = 0; $i < count($lPid); $i++ )
   	{
-  		$result = $mysqli->query( $lQuery->getProductPriceQuantity($lPid[$i]) );
+  		$result = $mysqli->query( $lQuery->getProductNamePriceQuantity($lPid[$i]) );
 
   		if( !$result )
   		{
@@ -83,7 +83,7 @@
   		// Check if PID is available (only 1 row)
   		if( $result->num_rows != 1)
   		{
-  			$lErrorMessage .= "<li>Product id not found: ".$lPid[$i]."</li>";
+  			$lErrorMessage .= "<li>Product not found: ".$lPid[$i]."</li>";
   			$lValid = 0;
   		}
   		else
@@ -93,7 +93,7 @@
   			// Check if stock exists
   			if( $row['stockamount'] < $lQuantity[$i] )
   			{
-  				$lErrorMessage .= "<li>Insufficient Stock for Pid: ".$lPid[$i]."</li>";
+  				$lErrorMessage .= "<li>Insufficient Stock for: ".$row['pname']."</li>";
 
   				$lValid = 0;
   			}
@@ -111,7 +111,7 @@
   	if( $lValid )
   	{
   		/* Insert receipt into Receipt table */
-  		if( $mysqli->query($lInsert->insertReceipt($lTotal)) )
+  		if( $mysqli->query($lInsert->insertReceipt($_SESSION['loggedin']['uid'], $lTotal)) )
   		{
   			// Get receipt id
   			$lReceiptCode = $mysqli->insert_id;
@@ -147,6 +147,8 @@
 
   	// Report Errors
   	$mysqli->close();
-  	echo $lErrorMessage;
+  	$lJsonString = array('valid' => $lValid, 'errors' => $lErrorMessage, 'receiptcode' => $lReceiptCode);
+
+  	echo json_encode($lJsonString);
   }
 ?>

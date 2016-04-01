@@ -43,11 +43,32 @@ class QueryDB
   /**
    *	Get product details given product id
    */
-  public static function getProductPriceQuantity($aPid)
+  public static function getProductNamePriceQuantity($aPid)
   {
-  	$query = "SELECT pid, salesprice, stockamount
+  	$query = "SELECT SALEITEM.pid, PRODUCT.pname, SALEITEM.salesprice, SALEITEM.stockamount
   		FROM SALEITEM
-  		WHERE pid = '$aPid'";
+  		
+      INNER JOIN PRODUCT AS PRODUCT
+      ON SALEITEM.pid = PRODUCT.pid
+
+      WHERE SALEITEM.pid = '$aPid'";
+
+  	return $query;
+  }
+
+  /**
+   *	Get all product details linked to a transaction code 
+   *	identified by a receipt code
+   */
+  public static function getTransactionDetails( $aReceiptCode )
+  {
+  	$query = "SELECT PRODUCT.barcode, PRODUCT.pname, PRODUCT.brand, PRODUCT.category, PRODUCT.description, TRANSACTION.salesprice, TRANSACTION.quantity 
+  	FROM TRANSACTION
+
+  	INNER JOIN PRODUCT AS PRODUCT
+  	ON TRANSACTION.pid = PRODUCT.pid 
+
+  	WHERE TRANSACTION.receiptcode = '$aReceiptCode'";
 
   	return $query;
   }
