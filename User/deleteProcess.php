@@ -9,9 +9,7 @@
 
  if(isset($_POST['uid']))
  {
-   $uid = $_POST['$uid'];
-
-   $return = false;
+   $uid = $_POST['uid'];
 
    $mysqli = new mysqli (
      $host,
@@ -20,7 +18,7 @@
      $sql_db
    );
 
-   $userPro = UserProcess;
+   $userPro = new UserModel;
 
    /* Check Connection */
    if( $mysqli->connect_errno )
@@ -29,15 +27,15 @@
      exit();
    }
 
-   $insert = $userPro->deleteUser($uid, $lname, $password, $role);
-
+   $insert = $userPro->deleteUser($uid);
+	 
    if( $mysqli->query($insert) === FALSE )
    {
      printf("Data Handler Failed: %s\n", $mysqli->error);
-     result
+     $return = 'the user cannot be deleted';
    }
    else {
-      $return = true;
+     $return = 'true';
    }
    $mysqli->close();
 
