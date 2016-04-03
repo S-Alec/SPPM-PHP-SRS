@@ -30,18 +30,18 @@ class UserModel
 	 * 	Salts + Hashes the Users password before updateing it
 	 *	into the table
 	 */
-	public static function updateUser( $aId, $aLName, $aPassword, $aRole )
+	public static function updateUser( $aId, $aUsername, $aLName, $aPassword, $aRole)
 	{
-		$insertString = "UPDATE USER ( username, lname, password, role )
-											SET lname = '$aLName'";
+		$insertString = "UPDATE USER SET lname = '$aLName'";
 		//check is change password
 		if(empty($aPassword))
 		{
 			$lHashedSaltedPassword = password_hash($aPassword, PASSWORD_DEFAULT);
-			$insertString += ", password = '$lHashedSaltedPassword'";
+			$insertString .= ", password = '$lHashedSaltedPassword'";
 		}
-			$insertString += ", role = '$aRole'";
-			$insertString += " WHERE uid = '$aId'";
+		$insertString .= ", username = '$aUsername'";
+		$insertString .= ", role = '$aRole'";
+		$insertString .= " WHERE uid = '$aId'";
 
 		return $insertString;
 	}
@@ -52,9 +52,33 @@ class UserModel
 	 * 	Salts + Hashes the Users password before updateing it
 	 *	into the table
 	 */
-	public static function deleteUser( $aId)
+	public static function deleteUser($aId)
 	{
-		$insertString = "DELETE FROM USER WHERE uid = '$aId'";
+		$insertString = "DELETE * FROM USER WHERE uid = $aId";
+		return $insertString;
+	}
+
+	/**
+	 *	Users
+	 *	Update String for the User Table
+	 * 	Salts + Hashes the Users password before updateing it
+	 *	into the table
+	 */
+	public static function getUserList()
+	{
+		$insertString = "SELECT uid, username, lname, role FROM USER";
+		return $insertString;
+	}
+
+	/**
+	 *	Users
+	 *	Update String for the User Table
+	 * 	Salts + Hashes the Users password before updateing it
+	 *	into the table
+	 */
+	public static function getUserByUsername($username)
+	{
+		$insertString = "SELECT uid FROM USER WHERE username = '$username'";
 		return $insertString;
 	}
 }
