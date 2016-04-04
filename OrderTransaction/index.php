@@ -61,7 +61,7 @@
                 ?>
                   <li><a href="../StockManagement">Stock Management</a>
                   <li><a href="../TransactionHistory">Transaction History</a></li>
-                  <li><a href="../UserManagement">User Management</a></li>
+                  <li><a href="../User">User Management</a></li>
                 <?php
                 }
               ?>
