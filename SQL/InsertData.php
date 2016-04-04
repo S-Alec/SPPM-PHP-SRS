@@ -72,10 +72,10 @@ class InsertData
 	/**
 	 *	Receipt
 	 */
-	public static function insertReceipt( $aTotalPrice )
+	public static function insertReceipt( $aUid, $aTotalPrice )
 	{
-		$insertString = "INSERT INTO RECEIPT ( totalspent )
-		VALUES ('$aTotalPrice')";
+		$insertString = "INSERT INTO RECEIPT ( uid, totalspent )
+		VALUES ('$aUid', '$aTotalPrice')";
 
 		return $insertString;
 	}

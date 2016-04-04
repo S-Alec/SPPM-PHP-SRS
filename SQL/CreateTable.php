@@ -112,7 +112,7 @@ class CreateTable
 	{
 		$create = "CREATE TABLE IF NOT EXISTS SALEITEM (
 			pid 		INT NOT NULL,
-			salesprice decimal(3,3) NOT NULL,
+			salesprice decimal(6,3) NOT NULL,
 			stockamount INT(5) NOT NULL,
 
 			FOREIGN KEY (pid) REFERENCES PRODUCT (pid),
@@ -125,6 +125,8 @@ class CreateTable
 	/**
 	 *	Create table Receipt Table
 	 *	Field Descriptions-
+	 *		uid 			: uid for user that processed
+	 *						  transaction
 	 *		receiptcode 	: transaction code auto generated
 	 *		transactiondate : date time when item was inserted
 	 *		totalspent		: total amount spent on all products
@@ -133,9 +135,11 @@ class CreateTable
 	{
 		$create = "CREATE TABLE IF NOT EXISTS RECEIPT (
 			receiptcode 	INT AUTO_INCREMENT NOT NULL,
+			uid 			INT NOT NULL,
 			transactiondate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			totalspent 		decimal(5,3) NOT NULL,
+			totalspent 		decimal(10,3) NOT NULL,
 
+			FOREIGN KEY (uid) REFERENCES USER (uid),
 			PRIMARY KEY (receiptcode)
 		);";
 
@@ -155,12 +159,12 @@ class CreateTable
 		$create = "CREATE TABLE IF NOT EXISTS TRANSACTION (
 			receiptcode INT NOT NULL,
 			pid 		INT NOT NULL,
-			salesprice 	DECIMAL(3,3),
+			salesprice 	DECIMAL(6,3),
 			quantity 	INT(3) NOT NULL,
 
 			FOREIGN KEY (pid) REFERENCES PRODUCT (pid),
 			FOREIGN KEY (receiptcode) REFERENCES RECEIPT (receiptcode),
-			PRIMARY KEY (receiptcode)
+			PRIMARY KEY (receiptcode, pid)
 		);";
 
 		return $create;
