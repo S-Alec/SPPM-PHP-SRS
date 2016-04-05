@@ -1,4 +1,12 @@
 <?php
+	
+	/**
+	 *	Datepicker Resources : 
+	 *		https://bootstrap-datepicker.readthedocs.org/en/latest/
+	 *		
+	 *		http://formvalidation.io/examples/jquery-ui-datepicker/#datepicker-programmatic-tab
+	 */
+
 	session_start();
 
   /* Check Loggedin session */
@@ -22,6 +30,7 @@
 
       <!-- Bootstrap core CSS -->
       <link href="../css/bootstrap.min.css" rel="stylesheet">
+      <link href="../css/datepicker.css" rel="stylesheet">
 
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <link href="../css/ie10-viewport-bug-workaround.css" rel="stylesheet">
@@ -64,7 +73,7 @@
           <div class="col-lg-4">
             <form action="#searchresults" onsubmit="searchForReceipt()">
               <div class="input-group">
-                <input id="searchterm" type="text" class="form-control" placeholder="Enter Receipt Code...">
+                <input id="searchterm" type="text" class="form-control" placeholder="Enter Receipt Code, Username, Lastname, or Role..." required="required">
                 <span class="input-group-btn">
                   <button id="search" class="btn btn-default" type="submit">Find</button>
                 </span>
@@ -73,17 +82,19 @@
           </div>
           <!-- Date Search -->
           <div class="col-lg-4">
-            <!-- From -->
-            <div class="input-group">
+          	<!-- From -->
+            <div class="input-group date" data-provide="datepicker">
               <span class="input-group-addon" id="from-addon">From</span>
-              <input id="datefrom" type="date" placeholder="DD/MM/YYYY" onchange="findReceiptRange()" class="form-control" aria-describedby="from-addon">
+              <input id="datefrom" type="date" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="from-addon">
+              <!--<span class="input-group-addon glyphicon glyphicon-th" id="calendar-addon-from"></span>-->
             </div>
           </div>
           <div class="col-lg-4">
             <!-- To -->
-            <div class="input-group">
+            <div class="input-group date" data-provide="datepicker">
               <span class="input-group-addon" id="to-addon">To</span>
-              <input id="dateto" type="date" placeholder="DD/MM/YYYY" onchange="findReceiptRange()" class="form-control" aria-describedby="to-addon">
+              <input id="dateto" type="date" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="to-addon">
+              <!--<span class="input-group-addon glyphicon glyphicon-th"></span>-->
             </div>
           </div>
         </div>
@@ -107,27 +118,31 @@
 	      </table>
       </div>
 
-      <!-- EXAMPLE -->
-      
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-        Launch demo modal
-      </button>
-
       <!-- Modal -->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptHead">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+              <h4 class="modal-title" id="receiptHead">Replace with title</h4>
             </div>
             <div class="modal-body">
-              ...
+              <table class="table table-bordered">
+              	<tr>
+              	  <th><strong>Barcode</strong></th>
+              	  <th><strong>Brand</strong></th>
+              	  <th><strong>Product</strong></th>
+              	  <th><strong>Price</strong></th>
+              	  <th><strong>Quantity</strong></th>
+              	  <th><strong>Total</strong></th>
+              	</tr>
+              	<tbody id="transactionresults">
+              	  <!-- Replace Content -->
+              	</tbody>
+             	</table>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
             </div>
           </div>
         </div>
@@ -139,17 +154,55 @@
       <!-- Placed at the end of the document so the pages load faster -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
       <script src="../js/bootstrap.min.js"></script>
+      <script src="../js/bootstrap-datepicker.js"></script>
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <script src="../js/ie10-viewport-bug-workaround.js"></script>
       
       <script>
-        
+       	
+       	$(document).ready(function() {
+       		$.fn.datepicker.defaults.format = "dd/mm/yyyy";
+
+       		$('#datefrom').datepicker()
+       		  .on('changeDate', function(){
+       		    findReceiptRange();
+       		  });
+
+       		$('#dateto').datepicker()
+       		  .on('changeDate', function(){
+       		    findReceiptRange();
+       		  });
+       	});
+			
+       
+
         /**
          *  Make ajax request to search for receipt
          */
         function searchForReceipt()
         {
-          return false;
+          var lSearchTerm   = $('#searchterm');
+          var lSearchButton = $('#search');
+
+          // disable search function
+          lSearchButton.prop( "disabled", true );
+          lSearchTerm.prop( "disabled", true );
+
+          /* Find the receipt */
+          $.ajax({
+            method: "POST",
+            url   : "findreceipt.php",
+            async : true,
+            data  : { searchterm: lSearchTerm.val() }
+          }).done(function( aTableResult ) {
+
+            // replace content within search table
+            $('#searchresults').html(aTableResult);
+            
+            // enable search button
+            lSearchButton.prop( "disabled", false );
+            lSearchTerm.prop( "disabled", false );
+          });
         }
 
         /**
@@ -157,9 +210,16 @@
          *  visualy display any errors
          *  returns bool
          */
-        function validateDate( aDateID )
+        function validateDate( aDate )
         {
+        	if( !Date.parse(aDate.val()) )
+        	{
+        		aDate.removeClass("has-success").addClass("has-error");
+        		return false;
+        	}
 
+        	aDate.removeClass("has-error").addClass("has-success");
+        	return true;
         }
 
         /**
@@ -168,7 +228,46 @@
          */
         function findReceiptRange()
         {
+        	var lDateFrom = $('#datefrom');
+        	var lDateTo = $('#dateto');
 
+        	if( validateDate(lDateFrom) && validateDate(lDateTo) )
+        	{
+        		/* Get all transaction details */
+        		$.ajax({
+        		  method: "POST",
+        		  url   : "findreceiptrange.php",
+        		  async : true,
+        		  data  : { datefrom: lDateFrom.val(), dateto: lDateTo.val() }
+        		}).done(function( aTableResult ) {
+
+        		  // replace content within the search table
+        		  $('#searchresults').html(aTableResult);
+        		  
+        		});
+        	}
+        }
+
+        /** 
+         *	Find and display the data assosciated with a 
+         *	receipt code
+         */
+        function populateModal( aReceiptCode )
+        {
+        	$('#receiptHead').html("Receipt No. " + aReceiptCode);
+
+        	/* Get all transaction details */
+          $.ajax({
+            method: "POST",
+            url   : "populatemodal.php",
+            async : true,
+            data  : { receiptcode: aReceiptCode }
+          }).done(function( aTableResult ) {
+
+          	// replace content within the modal transaction table
+            $('#transactionresults').html(aTableResult);
+          
+          });
         }
 
       </script>
