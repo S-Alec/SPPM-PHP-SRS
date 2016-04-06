@@ -54,7 +54,7 @@ class UserModel
 	 */
 	public static function deleteUser($aId)
 	{
-		$insertString = "DELETE * FROM USER WHERE uid = $aId";
+		$insertString = "DELETE FROM USER WHERE uid = $aId";
 		return $insertString;
 	}
 
