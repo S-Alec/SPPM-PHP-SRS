@@ -26,8 +26,6 @@
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <link href="../css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-      <!-- Custom styles for this template -->
-      <link href="navbar-static-top.css" rel="stylesheet">
      </head>
 
     <body>
@@ -61,7 +59,7 @@
                 ?>
                   <li><a href="../StockManagement">Stock Management</a>
                   <li><a href="../TransactionHistory">Transaction History</a></li>
-                  <li><a href="../UserManagement">User Management</a></li>
+                  <li><a href="../User">User Management</a></li>
                 <?php
                 }
               ?>
@@ -78,7 +76,7 @@
         <!-- Search Bar -->
         <div class="row">
           <div class="col-lg-6">
-            <form action="#searchresults" onsubmit="searchForItem()">
+            <form onsubmit="return searchForItem()" >
               <div class="input-group">
                 <input id="searchterm" type="text" class="form-control" placeholder="Enter Product name, barcode, category, or brand...">
                 <span class="input-group-btn">
@@ -120,6 +118,7 @@
           <div class="panel-heading">Order Cart-</div>
           <table id="cart" class="table table-bordered">
             <tr>
+              <th class="hidden">id</th>
               <th>Barcode</th>
               <th>Brand</th>
               <th>Name</th>
@@ -179,6 +178,8 @@
             lSearchButton.prop( "disabled", false );
             lSearchTerm.prop( "disabled", false );
           });
+
+          return false;
         }
 
         /**
@@ -186,6 +187,9 @@
          */
         function addItemToCart( aPid )
         {
+          // Determine number of items in table
+          var rowCount = $('#cart tr').length;
+
           var bcode 	   = $('#bcode' + aPid).html();
           var brand 	   = $('#brand' + aPid).html();
           var name  	   = $('#name' + aPid).html();
@@ -194,16 +198,19 @@
           var stock 	   = $('#stock' + aPid).html();
           var price 	   = $('#price' + aPid).html();
 
+          rowCount++;
+
           // Insert row into table
-          $('#cart').append('<tr id="'+ aPid +'">' +
-           	  '<td id="cbcode'+ aPid +'">'+ bcode +'</td>' +
-           	  '<td id="cbrand'+ aPid +'">'+ brand +'</td>' +
-           	  '<td id="cname'+ aPid +'">'+ name + '</td>' + 
-           	  '<td id="ccategory'+ aPid +'">'+ category + '</td>' + 
-           	  '<td id="cdesc'+ aPid +'">'+ description + '</td>' +
-           	  '<td id="cprice'+ aPid +'">'+ price + '</td>' +
-           	  '<td><input id="cqty'+ aPid +'" type="number" min="1" max="'+stock+'" value="1" onchange="calculateTotalCost()"/></td>' +
-           	  '<td><button type="button" class="btn btn-danger" onclick="removeItemFromCart('+ aPid +')">' +
+          $('#cart').append('<tr id="row'+rowCount+'">' +
+              '<td class="cpid hidden">'+ aPid +'</td>' +
+           	  '<td class="cbcode">'+ bcode +'</td>' +
+           	  '<td class="cbrand">'+ brand +'</td>' +
+           	  '<td class="cname">'+ name + '</td>' + 
+           	  '<td class="ccategory">'+ category + '</td>' + 
+           	  '<td class="cdesc">'+ description + '</td>' +
+           	  '<td class="cprice">'+ price + '</td>' +
+           	  '<td><input class="cqty" type="number" min="1" max="'+stock+'" value="1" onchange="calculateTotalCost()"/></td>' +
+           	  '<td><button type="button" class="btn btn-danger" onclick="removeItemFromCart('+ rowCount +')">' +
 			  	'<span class="glyphicon glyphicon glyphicon-minus" aria-hidden="true"></span> Remove' +
 				'</button></td>' +
            	'</tr>'
@@ -219,10 +226,10 @@
         /**
          *  Remove item from the cart
          */
-        function removeItemFromCart( aPid )
+        function removeItemFromCart( aRow )
         {
           // Remove item from cart
-          $('#'+ aPid).remove();
+          $('#row'+ aRow).remove();
 
           // Update total
           calculateTotalCost();
@@ -234,24 +241,21 @@
          */
         function calculateTotalCost()
         {
-          var lPid;
           var lTotal = 0;
           var lPrice = 0;
           var lQuantity = 0;
 
-          // Scan each row of the Cart table
-          $('#cart > tbody > tr').each(function(rowIndex) {
-            lPid = $(this).attr('id');
-            
-            lPrice = parseFloat($('#cprice' + lPid).html());
-            lQuantity = parseFloat($('#cqty' + lPid).val());
+          // Get array of required fields
+          var lTablePrices = $("#cart tr td.cprice");
+          var lTableQtys = $("#cart tr td input.cqty");
 
-            if( !Number.isNaN(parseInt(lPid)) )
-            {
-              lTotal += (lPrice * lQuantity);
-            }
+          for( var i = 0; i < lTableQtys.length; i++ )
+          {
+            lPrice = parseFloat($(lTablePrices[i]).html());
+            lQuantity = parseFloat($(lTableQtys[i]).val());
 
-          });
+            lTotal += (lPrice * lQuantity);
+          }
 
           // Update Total
           $('#total').html('<strong>Total:</strong> $' + lTotal.toFixed(2));
@@ -269,17 +273,20 @@
           // Disable the Print Receipt button
           $('#print').prop('disabled', true);
 
-          // Scan each row of the Cart table
-          $('#cart tr').each(function(rowIndex) {
-            
-            lPid = $(this).attr('id');
-            lQuantity = parseFloat($('#cqty' + lPid).val());
+          // Get array of required fields
+          var lTablePids = $("#cart tr td.cpid");
+          var lTableQtys = $("#cart tr td input.cqty");
+
+          for( var i = 0; i < lTablePids.length; i++ )
+          {
+            lPid = $(lTablePids[i]).html(); 
+            lQuantity = parseFloat($(lTableQtys[i]).val());
 
             if( !Number.isNaN(parseInt(lPid)) )
             {
-            	lPostData.push( {"pid":lPid, "quantity":lQuantity});
+              lPostData.push( {"pid":lPid, "quantity":lQuantity});
             }
-          });
+          }
           
           // Validate items can be purchased
           $.ajax({
