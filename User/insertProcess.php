@@ -11,17 +11,16 @@
      $password = $_POST['password'];
      $lname = $_POST['lname'];
      $role = $_POST['role'];
-
      $return = 'false';
 
      $mysqli = new mysqli(
-     $host,
-     $user,
-     $pwd,
-     $sql_db
-   );
+         $host,
+         $user,
+         $pwd,
+         $sql_db
+      );
 
-     $userPro = new UserModel();
+     $userModel = new UserModel();
 
    /* Check Connection */
    if ($mysqli->connect_errno) {
@@ -30,11 +29,11 @@
    }
 
      //check if username exist or not
-	   $sql = $userPro->getUserByUsername($username);
-		 $result = $mysqli->query($sql);
+	   $query = $userModel->getUserByUsername($username);
+		 $result = $mysqli->query($query);
      if ($result->num_rows == 0) {
-         $insert = $userPro->insertUser($username, $lname, $password, $role);
-         if ($mysqli->query($insert) === false) {
+         $query = $userModel->insertUser($username, $lname, $password, $role);
+         if ($mysqli->query($query) === false) {
              printf("Data Handler Failed: %s\n", $mysqli->error);
              $return = 'false';
          } else {

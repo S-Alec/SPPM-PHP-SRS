@@ -5,14 +5,14 @@
   ob_start();
   session_start();
   //check session
-  // if (!(isset($_SESSION['Productname']) && $_SESSION['Productname'] != '')) {
-  //   //redirect
-  //   header ("Location: index.php");
-  // }
+  if(!$_SESSION['loggedin']['role'] === "MANAGER" )
+  {
+    header("location: OrderTransaction/");
+  }
 
   $mysqli = new mysqli(
     $host,
-    $Product,
+    $user,
     $pwd,
     $sql_db
   );
@@ -23,8 +23,8 @@
       exit();
   }
 
-  $ProductPro = new ProductModel();
-  $sql = $ProductPro->getProductList();
+  $productModel = new ProductModel();
+  $sql = $productModel->getProductList();
 ?>
 <div class="row">
     <div class="col-lg-12">
@@ -52,6 +52,7 @@
                                 <th>Brand</th>
                                 <th>Category</th>
                                 <th>Quantity</th>
+                                <th>Sales Price</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -72,6 +73,7 @@
                                     .'<td>'.$row['category'].'</td>'
                                     .'<td>'.$row['description'].'</td>'
                                     .'<td>'.$row['stockamount'].'</td>'
+                                    .'<td>'.$row['salesprice'].'</td>'
                                    .'<td>'
                                           .'<button class="btn btn-default btn-stock-edit"
                                           data-barcode="'.$row['barcode'].'"
@@ -79,7 +81,8 @@
                                           data-brand="'.$row['brand'].'"
                                           data-category="'.$row['category'].'"
                                           data-description="'.$row['description'].'"
-                                          data-stockamount="'.$row['stockamount'].'"
+                                          data-quantity="'.$row['stockamount'].'"
+                                          data-salesprice="'.$row['salesprice'].'"
                                           data-id="'.$row['pid'].'
                                           ">Edit</button> &nbsp;'
                                           .'<button class="btn btn-default btn-stock-delete" data-id="'.$row['pid'].'">Delete</button>'
@@ -138,6 +141,14 @@
                   <label for="pwd">Description:</label>
                   <input type="text" name="description" class="form-control" id="modal-txt-description" placeholder="Enter description">
                 </div>
+                <div class="form-group">
+                <label for="pwd">Quatity:</label>
+                  <input type="text" name="description" class="form-control" id="modal-txt-quantity" placeholder="Enter quantity">
+                </div>
+                <div class="form-group">
+                  <label for="pwd">Sales Price:</label>
+                  <input type="text" name="description" class="form-control" id="modal-txt-salesprice" placeholder="Enter sales price">
+                </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="modal-btn-stock-save">Save</button>
@@ -158,4 +169,4 @@
   //Apply the template
   include '../master.php';
 ?>
-<script src="stock.js"></script>
+<script src="stock.js?id=1"></script>

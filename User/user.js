@@ -62,6 +62,10 @@ $(document).ready(function() {
   //onOpenUserForm
   $('#btn-user-add-new').on('click', function() {
     editId = 0;
+    $modalTxtUsername.val('');
+    $modalTxtLastname.val('');
+    $modalCbbRole.val('');
+    modalTxtPassword.val('');
     $modalUserForm.modal('show');
   });
 

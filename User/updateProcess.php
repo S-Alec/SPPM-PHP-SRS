@@ -24,7 +24,7 @@
      $sql_db
    );
 
-   $userPro = new UserModel;
+   $userModel = new UserModel;
 
    /* Check Connection */
    if( $mysqli->connect_errno)
@@ -34,12 +34,12 @@
    }
 
 	 //check if username exist or not
-	 $sql = $userPro->getUserByUsername($username);
-	 $sql = $sql . " AND uid != '$uid'";
-	 $result = $mysqli->query($sql);
+	 $query = $userModel->getUserByUsername($username);
+	 $query = $query . " AND uid != '$uid'";
+	 $result = $mysqli->query($query);
 	 if ($result->num_rows == 0) {
-		   $insert = $userPro->updateUser($uid, $username, $lname, $password, $role);
-			 if ($mysqli->query($insert) === false) {
+		   $query = $userModel->updateUser($uid, $username, $lname, $password, $role);
+			 if ($mysqli->query($query) === false) {
 					 printf("Data Handler Failed: %s\n", $mysqli->error);
 					 $return = 'the user cannot be updated';
 			 } else {

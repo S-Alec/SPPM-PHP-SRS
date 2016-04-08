@@ -1,85 +1,76 @@
 <?php
 /**
- *	Handle insert new user to database
- *
- */
+*	Handle sql query in user secntion
+*  return CRUD query string
+*
+*/
 ?>
 
 <?php
 class UserModel
 {
 	/**
-	 *	Users
-	 *	Insert String for the User Table
-	 * 	Salts + Hashes the Users password before inserting it
-	 *	into the table
+		*	Users
+		*	return sql query for inserting a user
 	 */
 	public static function insertUser( $aUsername, $aLName, $aPassword, $aRole )
 	{
 		$lHashedSaltedPassword = password_hash($aPassword, PASSWORD_DEFAULT);
 
-		$insertString = "INSERT INTO USER ( username, lname, password, role )
+		$query = "INSERT INTO USER ( username, lname, password, role )
 			VALUES ('$aUsername', '$aLName', '$lHashedSaltedPassword', '$aRole' )";
 
-		return $insertString;
+		return $query;
 	}
 
 	/**
 	 *	Users
-	 *	Update String for the User Table
-	 * 	Salts + Hashes the Users password before updateing it
-	 *	into the table
+	 *	return sql query for updating a user
 	 */
 	public static function updateUser( $aId, $aUsername, $aLName, $aPassword, $aRole)
 	{
-		$insertString = "UPDATE USER SET lname = '$aLName'";
+		$query = "UPDATE USER SET lname = '$aLName'";
 		//check is change password
 		if(empty($aPassword))
 		{
 			$lHashedSaltedPassword = password_hash($aPassword, PASSWORD_DEFAULT);
-			$insertString .= ", password = '$lHashedSaltedPassword'";
+			$query .= ", password = '$lHashedSaltedPassword'";
 		}
-		$insertString .= ", username = '$aUsername'";
-		$insertString .= ", role = '$aRole'";
-		$insertString .= " WHERE uid = '$aId'";
+		$query .= ", username = '$aUsername'";
+		$query .= ", role = '$aRole'";
+		$query .= " WHERE uid = '$aId'";
 
-		return $insertString;
+		return $query;
 	}
 
 	/**
 	 *	Users
-	 *	Update String for the User Table
-	 * 	Salts + Hashes the Users password before updateing it
-	 *	into the table
+	 *	return sql query for deleteing a user
 	 */
 	public static function deleteUser($aId)
 	{
-		$insertString = "DELETE FROM USER WHERE uid = $aId";
-		return $insertString;
+		$query = "DELETE FROM USER WHERE uid = $aId";
+		return $query;
 	}
 
 	/**
 	 *	Users
-	 *	Update String for the User Table
-	 * 	Salts + Hashes the Users password before updateing it
-	 *	into the table
+ 	 *	return sql query for selecting all of user
 	 */
 	public static function getUserList()
 	{
-		$insertString = "SELECT uid, username, lname, role FROM USER";
-		return $insertString;
+		$query = "SELECT uid, username, lname, role FROM USER";
+		return $query;
 	}
 
 	/**
 	 *	Users
-	 *	Update String for the User Table
-	 * 	Salts + Hashes the Users password before updateing it
-	 *	into the table
+	 *	return sql query for checking existance of username
 	 */
 	public static function getUserByUsername($username)
 	{
-		$insertString = "SELECT uid FROM USER WHERE username = '$username'";
-		return $insertString;
+		$query = "SELECT uid FROM USER WHERE username = '$username'";
+		return $query;
 	}
 }
 ?>
