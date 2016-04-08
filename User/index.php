@@ -5,17 +5,18 @@
   ob_start();
   session_start();
   //check session
-  // if (!(isset($_SESSION['username']) && $_SESSION['username'] != '')) {
-  //   //redirect
-  //   header ("Location: index.php");
-  // }
+  if(!$_SESSION['loggedin']['role'] === "MANAGER" )
+  {
+    header("location: OrderTransaction/");
+  }
 
-  $mysqli = new mysqli(
-    $host,
-    $user,
-    $pwd,
-    $sql_db
-  );
+  // Connect to DB
+	$mysqli = new mysqli (
+	  $host,
+	  $user,
+	  $pwd,
+	  $sql_db
+	);
 
   /* Check Connection */
   if ($mysqli->connect_errno) {
@@ -23,8 +24,8 @@
       exit();
   }
 
-  $userPro = new UserModel();
-  $sql = $userPro->getUserList();
+  $userModel = new UserModel();
+  $sql = $userModel->getUserList();
 
 ?>
 <div class="row">

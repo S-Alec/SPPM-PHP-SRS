@@ -12,6 +12,8 @@ $(document).ready(function() {
   var $modalTxtBrand = $('#modal-txt-brand');
   var $modalTxtCategory = $('#modal-txt-category');
   var $modalTxtDescription = $('#modal-txt-description');
+  var $modalTxtSalesPrice = $('#modal-txt-salesprice');
+  var $modalTxtQuantity = $('#modal-txt-quantity');
   var editId = 0;
 
   //onDelete
@@ -54,6 +56,8 @@ $(document).ready(function() {
     var brand = target.data('brand');
     var category = target.data('category');
     var description = target.data('description');
+    var quantity = target.data('quantity');
+    var salesprice = target.data('salesprice');
 
     editId = id;
     $modalTxtBarCode.val(barcode);
@@ -61,13 +65,21 @@ $(document).ready(function() {
     $modalTxtBrand.val(brand);
     $modalTxtCategory.val(category);
     $modalTxtDescription.val(description);
+    $modalTxtSalesPrice.val(salesprice);
+    $modalTxtQuantity.val(quantity);
     $modalstockForm.modal('show');
-
   })
 
   //onOpenstockForm
   $('#btn-stock-add-new').on('click', function() {
     editId = 0;
+    $modalTxtBarCode.val('');
+    $modalTxtName.val('');
+    $modalTxtBrand.val('');
+    $modalTxtCategory.val('');
+    $modalTxtDescription.val('');
+    $modalTxtSalesPrice.val('');
+    $modalTxtQuantity.val('');
     $modalstockForm.modal('show');
   });
 
@@ -166,6 +178,38 @@ $(document).ready(function() {
       $formGroup.removeClass('has-error').addClass('has-success');
     }
 
+    //sales price
+    var reg = new RegExp(/^\d*\.\d{2}$/);
+    if ($modalTxtSalesPrice.val() == '' || reg.test($modalTxtSalesPrice.val()) == false) {
+      var $formGroup = $modalTxtSalesPrice.closest('.form-group');
+      $formGroup.find('.help-block').remove();
+      $formGroup.removeClass('has-success').addClass('has-error');
+      $formGroup.append('<span class="help-block">Required and only currency!</span>');
+
+      isValid = false;
+    } else {
+      var $formGroup = $modalTxtSalesPrice.closest('.form-group');
+      $formGroup.find('.help-block').remove();
+      $formGroup.addClass('valid');
+      $formGroup.removeClass('has-error').addClass('has-success');
+    }
+
+    //quantity
+    var reg = new RegExp(/^\d+$/);
+    if ($modalTxtQuantity.val() == '' || reg.test($modalTxtQuantity.val()) == false) {
+      var $formGroup = $modalTxtQuantity.closest('.form-group');
+      $formGroup.find('.help-block').remove();
+      $formGroup.removeClass('has-success').addClass('has-error');
+      $formGroup.append('<span class="help-block">Required and only number!</span>');
+
+      isValid = false;
+    } else {
+      var $formGroup = $modalTxtQuantity.closest('.form-group');
+      $formGroup.find('.help-block').remove();
+      $formGroup.addClass('valid');
+      $formGroup.removeClass('has-error').addClass('has-success');
+    }
+
     //if valid -> add new or update
     if(isValid)
     {
@@ -181,7 +225,9 @@ $(document).ready(function() {
             pname: $modalTxtName.val(),
             brand: $modalTxtBrand.val(),
             category: $modalTxtCategory.val(),
-            description: $modalTxtDescription.val()
+            description: $modalTxtDescription.val(),
+            salesprice: $modalTxtSalesPrice.val(),
+            quantity: $modalTxtQuantity.val()
           }
 
         }).done(function(response) {
@@ -209,7 +255,9 @@ $(document).ready(function() {
             pname: $modalTxtName.val(),
             brand: $modalTxtBrand.val(),
             category: $modalTxtCategory.val(),
-            description: $modalTxtDescription.val()
+            description: $modalTxtDescription.val(),
+            salesprice: $modalTxtSalesPrice.val(),
+            quantity: $modalTxtQuantity.val()
           }
 
         }).done(function(response) {

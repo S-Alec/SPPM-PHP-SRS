@@ -18,7 +18,7 @@
      $sql_db
    );
 
-   $userPro = new UserModel;
+   $userModel = new UserModel;
 
    /* Check Connection */
    if( $mysqli->connect_errno )
@@ -27,9 +27,9 @@
      exit();
    }
 
-   $insert = $userPro->deleteUser($uid);
-	 
-   if( $mysqli->query($insert) === FALSE )
+   $query = $userModel->deleteUser($uid);
+
+   if( $mysqli->query($query) === FALSE )
    {
      printf("Data Handler Failed: %s\n", $mysqli->error);
      $return = 'the user cannot be deleted';

@@ -1,3 +1,14 @@
+<?php
+	session_start();
+
+  /* Check Loggedin session */
+  if( !isset($_SESSION['loggedin']) )
+  {
+  	header("location: ../");
+  }
+  else
+  {
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,6 +40,14 @@
     <!-- Custom Fonts -->
     <link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- Bootstrap core CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="navbar-static-top.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -39,120 +58,55 @@
 </head>
 
 <body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">PHP SYSTEM</a>
-            </div>
-            <!-- /.navbar-header -->
-
-            <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-messages">
-                        <li>
-                            <a href="#">
-                                <div>
-                                    <strong>John Smith</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>Yesterday</em>
-                                    </span>
-                                </div>
-                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#">
-                                <div>
-                                    <strong>John Smith</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>Yesterday</em>
-                                    </span>
-                                </div>
-                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#">
-                                <div>
-                                    <strong>John Smith</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>Yesterday</em>
-                                    </span>
-                                </div>
-                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a class="text-center" href="#">
-                                <strong>Read All Messages</strong>
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-messages -->
-                </li>
-                <!-- /.dropdown -->
-                <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                </li>
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                            <!-- /input-group -->
-                        </li>
-                        <li>
-                            <a href="../Dashboard/index.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                        </li>
-                        <li>
-                            <a href="../User/index.php"><i class="fa fa-dashboard fa-fw"></i> User Management</a>
-                        </li>
-                        <li>
-                            <a href="../Stock/index.php"><i class="fa fa-dashboard fa-fw"></i> Stock Management</a>
-                        </li>
-                        <li>
-                            <a href="../Sales/index.php"><i class="fa fa-dashboard fa-fw"></i> Sales Management</a>
-                        </li>
-
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-
-        <div id="page-wrapper">
-          <?php echo $pagemaincontent;?>
-
-        </div>
-        <!-- /#page-wrapper -->
-
+  <nav id="nav" class="navbar navbar-default navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">SPPM-PHP-SRS</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+         <?php
+          /* Manager only Links */
+          if( $_SESSION['loggedin']['role'] === "MANAGER" )
+          {
+          ?>
+            <li><a href="../Report">Report</a></li>
+          <?php
+          }
+         ?>
+          <li class="active"><a data-url='OrderTransaction' href="../OrderTransaction">Order Transaction</a></li>
+          <?php
+            /* Manager only links */
+            if( $_SESSION['loggedin']['role'] === "MANAGER" )
+            {
+            ?>
+              <li><a data-url='Stock' href="../Stock">Stock Management</a>
+              <li><a data-url='TransactionHistory' href="../TransactionHistory">Transaction History</a></li>
+              <li><a data-url='User' href="../User">User Management</a></li>
+            <?php
+            }
+          ?>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="../logout.php">Logout</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
     </div>
+  </nav>
+
+  <div class="container">
+    <!-- Search Bar -->
+    <div class="row">
+      <?php echo $pagemaincontent; ?>
+    </div>
+  </div>
+
     <!-- /#wrapper -->
 
     <!-- jQuery -->
@@ -173,5 +127,7 @@
     <script src="../js/sb-admin-2.js"></script>
 
 </body>
-
 </html>
+<?php
+}
+?>
