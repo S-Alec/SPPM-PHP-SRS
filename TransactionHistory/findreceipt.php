@@ -54,11 +54,7 @@
 		      	<?php echo $row['transactiondate']; ?>
 		      </td>
 		      <td id=<?php echo "\"total".$row['receiptcode']."\""; ?>>
-<<<<<<< HEAD
-		 				<?php echo "$".$row['totalspent']; ?>
-=======
 		 				<?php echo "$".round($row['totalspent'], 2); ?>
->>>>>>> Fixed-Order-and-History-Transaction-pages
 		      </td>
 		      <td id=<?php echo "\"action".$row['receiptcode']."\""; ?>>
 		      	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#receiptModal" onclick=<?echo "populateModal('".$row['receiptcode']."')" ?> >

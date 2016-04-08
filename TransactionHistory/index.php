@@ -34,13 +34,7 @@
 
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <link href="../css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-<<<<<<< HEAD
-
-      <!-- Custom styles for this template -->
-      <link href="navbar-static-top.css" rel="stylesheet">
-=======
->>>>>>> Fixed-Order-and-History-Transaction-pages
-     </head>
+    </head>
 
     <body>
       <nav class="navbar navbar-default navbar-static-top">
@@ -74,11 +68,7 @@
         <div class="row">
           <!-- Search Bar -->
           <div class="col-lg-4">
-<<<<<<< HEAD
-            <form action="#searchresults" onsubmit="searchForReceipt()">
-=======
             <form onsubmit="return searchForReceipt()">
->>>>>>> Fixed-Order-and-History-Transaction-pages
               <div class="input-group">
                 <input id="searchterm" type="text" class="form-control" placeholder="Enter Receipt Code, Username, Lastname, or Role..." required="required">
                 <span class="input-group-btn">
@@ -92,11 +82,7 @@
           	<!-- From -->
             <div class="input-group date" data-provide="datepicker">
               <span class="input-group-addon" id="from-addon">From</span>
-<<<<<<< HEAD
-              <input id="datefrom" type="date" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="from-addon">
-=======
               <input id="datefrom" type="text" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="from-addon">
->>>>>>> Fixed-Order-and-History-Transaction-pages
               <!--<span class="input-group-addon glyphicon glyphicon-th" id="calendar-addon-from"></span>-->
             </div>
           </div>
@@ -104,11 +90,7 @@
             <!-- To -->
             <div class="input-group date" data-provide="datepicker">
               <span class="input-group-addon" id="to-addon">To</span>
-<<<<<<< HEAD
-              <input id="dateto" type="date" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="to-addon">
-=======
               <input id="dateto" type="text" placeholder="DD/MM/YYYY" class="form-control" aria-describedby="to-addon">
->>>>>>> Fixed-Order-and-History-Transaction-pages
               <!--<span class="input-group-addon glyphicon glyphicon-th"></span>-->
             </div>
           </div>
@@ -218,11 +200,8 @@
             lSearchButton.prop( "disabled", false );
             lSearchTerm.prop( "disabled", false );
           });
-<<<<<<< HEAD
-=======
 
           return false;
->>>>>>> Fixed-Order-and-History-Transaction-pages
         }
 
         /**

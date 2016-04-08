@@ -49,15 +49,9 @@
 		   		<td><?php echo $row['barcode']; ?></td>
 		   		<td><?php echo $row['brand']; ?></td>
 		   		<td><?php echo $row['pname']; ?></td>
-<<<<<<< HEAD
-		   		<td><?php echo "$".$row['salesprice']; ?></td>
-		   		<td><?php echo $row['quantity']; ?></td>
-		   		<td>$<?php echo ($row['salesprice'] * $row['quantity']); ?></td>
-=======
 		   		<td><?php echo "$".round($row['salesprice'], 2); ?></td>
 		   		<td><?php echo $row['quantity']; ?></td>
 		   		<td>$<?php echo round( ($row['salesprice'] * $row['quantity']), 2 ); ?></td>
->>>>>>> Fixed-Order-and-History-Transaction-pages
 		   	</tr>
 		  <?php
 
@@ -68,11 +62,7 @@
 				<td colspan="5">
 					<strong>Total : </strong>
 				</td>
-<<<<<<< HEAD
-				<td><strong><?php echo "$".$lTotal; ?></strong></td>
-=======
 				<td><strong><?php echo "$".round($lTotal, 2); ?></strong></td>
->>>>>>> Fixed-Order-and-History-Transaction-pages
 			</tr>
 		<?php
 	  }
