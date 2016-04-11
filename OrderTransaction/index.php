@@ -114,6 +114,8 @@
       <script src="../js/ie10-viewport-bug-workaround.js"></script>
 
       <script>
+      	var CARTCOUNT = 0;
+
         /**
          *  Query database for search term
          */
@@ -150,8 +152,7 @@
          */
         function addItemToCart( aPid )
         {
-          // Determine number of items in table
-          var rowCount = $('#cart tr').length;
+        	CARTCOUNT++;
 
           var bcode 	   = $('#bcode' + aPid).html();
           var brand 	   = $('#brand' + aPid).html();
@@ -161,10 +162,8 @@
           var stock 	   = $('#stock' + aPid).html();
           var price 	   = $('#price' + aPid).html();
 
-          rowCount++;
-
           // Insert row into table
-          $('#cart').append('<tr id="row'+rowCount+'">' +
+          $('#cart').append('<tr id="row'+CARTCOUNT+'">' +
               '<td class="cpid hidden">'+ aPid +'</td>' +
            	  '<td class="cbcode">'+ bcode +'</td>' +
            	  '<td class="cbrand">'+ brand +'</td>' +
@@ -173,7 +172,7 @@
            	  '<td class="cdesc">'+ description + '</td>' +
            	  '<td class="cprice">'+ price + '</td>' +
            	  '<td><input class="cqty" type="number" min="1" max="'+stock+'" value="1" onchange="calculateTotalCost()"/></td>' +
-           	  '<td><button type="button" class="btn btn-danger" onclick="removeItemFromCart('+ rowCount +')">' +
+           	  '<td><button type="button" class="btn btn-danger" onclick="removeItemFromCart('+ CARTCOUNT +')">' +
 			  	'<span class="glyphicon glyphicon glyphicon-minus" aria-hidden="true"></span> Remove' +
 				'</button></td>' +
            	'</tr>'
