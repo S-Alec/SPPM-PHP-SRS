@@ -55,7 +55,7 @@
 		      	<?php echo $row['transactiondate']; ?>
 		      </td>
 		      <td id=<?php echo "\"total".$row['receiptcode']."\""; ?>>
-		 				<?php echo "$".round($row['totalspent'], 2); ?>
+		 				<?php echo "$".number_format($row['totalspent'], 2, '.', ''); ?>
 		      </td>
 		      <td id=<?php echo "\"action".$row['receiptcode']."\""; ?>>
 		      	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#receiptModal" onclick=<?echo "populateModal('".$row['receiptcode']."')" ?> >

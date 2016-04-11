@@ -49,9 +49,9 @@
 		   		<td><?php echo $row['barcode']; ?></td>
 		   		<td><?php echo $row['brand']; ?></td>
 		   		<td><?php echo $row['pname']; ?></td>
-		   		<td><?php echo "$".round($row['salesprice'], 2); ?></td>
+		   		<td><?php echo "$".number_format($row['salesprice'], 2, '.', ''); ?></td>
 		   		<td><?php echo $row['quantity']; ?></td>
-		   		<td>$<?php echo round( ($row['salesprice'] * $row['quantity']), 2 ); ?></td>
+		   		<td>$<?php echo number_format( ($row['salesprice'] * $row['quantity']), 2, '.', '' ); ?></td>
 		   	</tr>
 		  <?php
 
@@ -62,7 +62,7 @@
 				<td colspan="5">
 					<strong>Total : </strong>
 				</td>
-				<td><strong><?php echo "$".round($lTotal, 2); ?></strong></td>
+				<td><strong><?php echo "$".number_format($lTotal, 2, '.', ''); ?></strong></td>
 			</tr>
 		<?php
 	  }

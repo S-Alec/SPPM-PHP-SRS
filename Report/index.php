@@ -52,7 +52,7 @@
             <ul class="nav navbar-nav">
               <li class="active"><a href="#">Report</a></li>
               <li><a href="../OrderTransaction">Order Transaction</a></li>
-              <li><a href="../StockManagement">Stock Management</a>
+              <li><a href="../Stock">Stock Management</a>
               <li><a href="../TransactionHistory">Transaction History</a></li>
               <li><a href="../User">User Management</a></li>
             </ul>

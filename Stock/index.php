@@ -73,7 +73,7 @@
                                     .'<td>'.$row['category'].'</td>'
                                     .'<td>'.$row['description'].'</td>'
                                     .'<td>'.$row['stockamount'].'</td>'
-                                    .'<td>'.$row['salesprice'].'</td>'
+                                    .'<td>'.number_format($row['salesprice'],2, '.', '').'</td>'
                                    .'<td>'
                                           .'<button class="btn btn-default btn-stock-edit"
                                           data-barcode="'.$row['barcode'].'"
