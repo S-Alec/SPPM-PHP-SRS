@@ -34,7 +34,10 @@
 
   	$lJsonObject = $_POST['json'];
   	$lDecodedObjects = json_decode($lJsonObject);
-  	
+    
+    $lTotal = 0;
+    $lValid = 1;
+
   	/* Parse Json object into arrays */
   	foreach( $lDecodedObjects as $lDecodedArray)
   	{
@@ -42,108 +45,117 @@
   		$lQuantity[] = $lDecodedArray->{'quantity'};
   	}
 
-  	/* Check for duplicate pids */
-  	for( $i = 0; $i < count($lPid); $i++ )
-  	{
-  		for( $y = 0; $y < count($lPid); $y++ )
-  		{
-  			if( $i != $y )
-  			{
-  				if( $lPid[$i] == $lPid[$y] )
-  				{
-  					// Add Quantity to first $lPid
-  					$lQuantity[$i] += $lQuantity[$y];
-  					
-  					// Remove Pid index and quantity
-  					unset($lPid[$y]);
-  					unset($lQuantity[$y]);
+    /* Check if Pid and quantity has been provided */
+    if( count($lPid) == 0 || count($lQuantity) == 0 )
+    {
+      $lValid = 0;
+      $lErrorMessage .= "<li>Cart is empty</li>";
+    }
+    else
+    { 	
+      /* Check for duplicate pids */
+    	for( $i = 0; $i < count($lPid); $i++ )
+    	{
+    		for( $y = 0; $y < count($lPid); $y++ )
+    		{
+          if( $i != $y )
+    			{
+    				if( $lPid[$i] == $lPid[$y] )
+    				{
+              // Add Quantity to first $lPid
+    					$lQuantity[$i] += $lQuantity[$y];
+    					
+    					// Remove Pid index and quantity
+    					unset($lPid[$y]);
+    					unset($lQuantity[$y]);
 
-  					// Reorder arrays
-  					$lPid = array_values($lPid);
-  					$lQuantity = array_values($lQuantity);
-  				}
-  			}
-  		}
-  	}
+    					// Reorder arrays
+    					$lPid = array_values($lPid);
+    					$lQuantity = array_values($lQuantity);
 
-  	$lTotal = 0;
-  	$lValid = 1;
+              // Test the same index
+              $y--; 
+    				}
+    			}
+    		}
+    	}
 
-  	/* Validate Transactions */
-  	for( $i = 0; $i < count($lPid); $i++ )
-  	{
-  		$result = $mysqli->query( $lQuery->getProductNamePriceQuantity($lPid[$i]) );
+    	/* Validate Transactions */
+    	for( $i = 0; $i < count($lPid); $i++ )
+    	{
+    		$result = $mysqli->query( $lQuery->getProductNamePriceQuantity($lPid[$i]) );
 
-  		if( !$result )
-  		{
-  			printf("Query Failed: %s\n", $mysqli->error);
-  			exit();
-  		}
+    		if( !$result )
+    		{
+    			printf("Query Failed: %s\n", $mysqli->error);
+    			exit();
+    		}
 
-  		// Check if PID is available (only 1 row)
-  		if( $result->num_rows != 1)
-  		{
-  			$lErrorMessage .= "<li>Product not found: ".$lPid[$i]."</li>";
-  			$lValid = 0;
-  		}
-  		else
-  		{	
-  			$row = $result->fetch_assoc();
+    		// Check if PID is available (only 1 row)
+    		if( $result->num_rows != 1)
+    		{
+    			$lErrorMessage .= "<li>Product not found: ".$lPid[$i]."</li>";
+    			$lValid = 0;
+    		}
+    		else
+    		{	
+    			$row = $result->fetch_assoc();
 
-  			// Check if stock exists
-  			if( $row['stockamount'] < $lQuantity[$i] )
-  			{
-  				$lErrorMessage .= "<li>Insufficient Stock for: ".$row['pname']."</li>";
+    			// Check if stock exists
+    			if( $row['stockamount'] < $lQuantity[$i] )
+    			{
+    				$lErrorMessage .= "<li>Insufficient Stock for: ".$row['pname']."</li>";
 
-  				$lValid = 0;
-  			}
-  			else
-  			{
-  				// Store salesprice
-  				$lSalesPrice[] = $row['salesprice'];
+    				$lValid = 0;
+    			}
+    			else
+    			{
+    				// Store salesprice
+    				$lSalesPrice[] = $row['salesprice'];
 
-  				// Evaluate Total
-  				$lTotal += ($lSalesPrice[$i] * $lQuantity[$i]);
-  			}
-  		}
-  	}
+    				// Evaluate Total
+    				$lTotal += ($lSalesPrice[$i] * $lQuantity[$i]);
+    			}
+    		}
+    	}
 
-  	if( $lValid )
-  	{
-  		/* Insert receipt into Receipt table */
-  		if( $mysqli->query($lInsert->insertReceipt($_SESSION['loggedin']['uid'], $lTotal)) )
-  		{
-  			// Get receipt id
-  			$lReceiptCode = $mysqli->insert_id;
-  		}
-  		else
-  		{
-  			echo $lInsert->insertReceipt($lTotal);
-  			printf("Query Failed: %s\n", $mysqli->error);
-  			exit();
-  		}
+    	if( $lValid )
+    	{
+    		/* Insert receipt into Receipt table */
+    		if( $mysqli->query($lInsert->insertReceipt($_SESSION['loggedin']['uid'], $lTotal)) )
+    		{
+    			// Get receipt id
+    			$lReceiptCode = $mysqli->insert_id;
+    		}
+    		else
+    		{
+    			echo $lInsert->insertReceipt($lTotal);
+    			printf("Query Failed: %s\n", $mysqli->error);
+    			exit();
+    		}
 
-  		for( $i = 0; $i < count($lPid); $i++ )
-  		{
-	  		/* Insert transaction into transaction table */
-	  		if( !$mysqli->query($lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i])) )
-	  		{
-	  			echo $lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i]);
-	  			printf("Query Failed: %s\n", $mysqli->error);
-  				exit();
-	  		}
-	  		else
-	  		{
-	  			/* Update stock amount in sales table */
-					if( !$mysqli->query($lUpdate->deductStockFromSalesTable($lPid[$i], $lQuantity[$i])) )
-					{
-						echo $lUpdate->deductStockFromSalesTable($lPid[$i], $lQuantity[$i]);
-						printf("Query Failed: %s\n", $mysqli->error);
-  					exit();
-					}	
-	  		}
-	  	}
-  	}
+    		for( $i = 0; $i < count($lPid); $i++ )
+    		{
+  	  		/* Insert transaction into transaction table */
+  	  		if( !$mysqli->query($lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i])) )
+  	  		{
+  	  			echo $lInsert->insertTransaction( $lReceiptCode, $lPid[$i], $lSalesPrice[$i], $lQuantity[$i]);
+  	  			printf("Query Failed: %s\n", $mysqli->error);
+    				exit();
+  	  		}
+  	  		else
+  	  		{
+  	  			/* Update stock amount in sales table */
+  					if( !$mysqli->query($lUpdate->deductStockFromSalesTable($lPid[$i], $lQuantity[$i])) )
+  					{
+  						echo $lUpdate->deductStockFromSalesTable($lPid[$i], $lQuantity[$i]);
+  						printf("Query Failed: %s\n", $mysqli->error);
+    					exit();
+  					}	
+  	  		}
+  	  	}
+    	}
+    }
 
   	// Report Errors
   	$mysqli->close();

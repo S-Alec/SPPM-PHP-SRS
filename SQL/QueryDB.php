@@ -19,6 +19,54 @@ class QueryDB
   }
 
   /**
+   *  Get dates within a range 
+   */
+  public static function getReceiptsWithinRange( $aFromDate, $aToDate )
+  {
+    $lFrom = DateTime::createFromFormat('d/m/Y', $aFromDate);
+    $lTo = DateTime::createFromFormat('d/m/Y', $aToDate);
+
+    $aFromDate = $lFrom->format('Y-m-d H:i:s');
+    $aToDate = $lTo->format('Y-m-d H:i:s');
+
+    $query = "SELECT RECEIPT.receiptcode, RECEIPT.transactiondate, RECEIPT.totalspent, USER.username 
+
+      FROM RECEIPT
+
+      INNER JOIN USER AS USER
+      ON USER.uid = RECEIPT.uid
+
+      WHERE (RECEIPT.transactiondate >= '$aFromDate') AND
+            (RECEIPT.transactiondate <= '$aToDate') 
+
+      ORDER BY RECEIPT.transactiondate";
+
+    return $query;
+  }
+
+  /**
+   *  Get all items that match the specific search terms
+   */
+  public static function getMatchingReceipts( $aSearchTerm )
+  {
+    $query = "SELECT RECEIPT.receiptcode, RECEIPT.transactiondate, RECEIPT.totalspent, USER.username 
+
+      FROM RECEIPT
+
+      INNER JOIN USER AS USER
+      ON USER.uid = RECEIPT.uid
+
+      WHERE (RECEIPT.receiptcode = '$aSearchTerm') OR
+            (USER.username = '$aSearchTerm') OR
+            (USER.lname = '$aSearchTerm') OR
+            (USER.role = '$aSearchTerm') 
+
+      ORDER BY RECEIPT.transactiondate";
+
+    return $query;
+  }
+
+  /**
    *  Get all items that match a search term
    */
   public static function getMatchingProducts( $aSearchTerm )

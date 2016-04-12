@@ -63,7 +63,7 @@
 	      	  <?php echo $row['stockamount']; ?>
 	      	</td>
 	      	<td id=<?php echo "\"price".$row['pid']."\""; ?>>
-	      	  <?php echo $row['salesprice']; ?>
+	      	  <?php echo number_format($row['salesprice'], 2, '.', ''); ?>
 	      	</td>
 	      	<td id=<?php echo "\"action".$row['pid']."\""; ?>>
 	      	 	<button type="button" class="btn btn-success" onclick=<?echo "addItemToCart('".$row['pid']."')" ?> >

@@ -79,9 +79,9 @@
       <td>".$row['brand']."</td>
       <td>".$row['pname']."</td>
       <td>".$row['category']."</td>
-      <td>".$row['salesprice']."</td>
+      <td>".number_format($row['salesprice'], 2, '.', '')."</td>
       <td>".$row['quantity']."</td>
-      <td>$".($row['salesprice'] * $row['quantity'])."</td></tr>";
+      <td>$".number_format( ($row['salesprice'] * $row['quantity']), 2, '.', '' )."</td></tr>";
 
       $lTotal += ($row['salesprice'] * $row['quantity']);
     }
@@ -90,7 +90,7 @@
       <td colspan=\"6\">
         <strong>Total :</strong>
       </td>
-      <td><strong>$".$lTotal."</strong></td></tr>";
+      <td><strong>$".number_format($lTotal, 2, '.', '')."</strong></td></tr>";
 
   	$pdf->writeHTML($html, true, false, true, false, '');
 
@@ -98,7 +98,7 @@
   	$pdf->lastPage();
 
   	// Close and output PDF document
-    $lFileName = $lReceiptCode.".pdf";
+    $lFileName = "Receipt_".$lReceiptCode.".pdf";
   	$pdf->Output($lFileName, 'D');
   }
 
