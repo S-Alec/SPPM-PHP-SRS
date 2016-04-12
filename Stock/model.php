@@ -68,7 +68,7 @@ class ProductModel
 	public static function getProductList()
 	{
 		$query = " SELECT PRODUCT.pid, PRODUCT.barcode, PRODUCT.pname, PRODUCT.brand, PRODUCT.category, PRODUCT.description, SALEITEM.stockamount, SALEITEM.salesprice";
-		$query.= " FROM PRODUCT LEFT JOIN SALEITEM ON SALEITEM.pid = PRODUCT.pid";
+		$query.= " FROM PRODUCT INNER JOIN SALEITEM ON SALEITEM.pid = PRODUCT.pid";
 		return $query;
 	}
 
