@@ -82,7 +82,7 @@
                                           data-category="'.$row['category'].'"
                                           data-description="'.$row['description'].'"
                                           data-quantity="'.$row['stockamount'].'"
-                                          data-salesprice="'.$row['salesprice'].'"
+                                          data-salesprice="'.number_format($row['salesprice'],2, '.', '').'"
                                           data-id="'.$row['pid'].'
                                           ">Edit</button> &nbsp;'
                                           .'<button class="btn btn-default btn-stock-delete" data-id="'.$row['pid'].'">Delete</button>'

@@ -35,7 +35,7 @@
 	 	$lQuery = new QueryDB;
 	  $lDateFrom = $_POST['datefrom'];
 	  $lDateTo = $_POST['dateto'];
-
+	  
 	 	/* Retrieve Items */
 	  $result = $mysqli->query( $lQuery->getReceiptsWithinRange($lDateFrom, $lDateTo) );
 
