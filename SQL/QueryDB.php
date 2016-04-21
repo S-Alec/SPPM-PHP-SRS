@@ -120,5 +120,22 @@ class QueryDB
 
   	return $query;
   }
+
+  /**
+   *  Get the entire stock quantity from the sales table
+   *  and all the assosciated data
+   */
+  public static function getAllStockQuantity()
+  {
+    $query = "SELECT PRODUCT.barcode, PRODUCT.pname, PRODUCT.brand, PRODUCT.category, SALEITEM.salesprice, SALEITEM.stockamount
+    FROM SALEITEM
+
+    INNER JOIN PRODUCT AS PRODUCT
+    ON SALEITEM.pid = PRODUCT.pid
+
+    ORDER BY SALEITEM.stockamount ASC";
+    
+    return $query;
+  }
 }
 ?>

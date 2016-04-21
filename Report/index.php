@@ -104,10 +104,9 @@
           			<div class="panel panel-default">
           				<div class="panel-heading">Stock Quantity</div>
           				<div id="scroll" class="panel-body">
-          					<p><strong>Max size of element will be 500px, for testing purposes 50px are used
-          					</strong></p>
-          					<p>Current Quantity</p>
-          					<p>This is a bunch of nonsense text to test the scrollability of the element. That's right Scrollability! I don't think that's a word...
+          					<ul id="stockquantity" class="list-group">
+         							<!-- AJAX Request for Stock Quantity -->
+          					</ul>
           				</div>
           				<div class="panel-footer">
           					 <button class="btn btn-info btn-group-justified" type="button">
@@ -145,6 +144,9 @@
       		  .on('changeDate', function(){
       		    getStatisticalData();
       		  });
+
+      		  // Update the current stock quantities list
+      		  getCurrentStockQuantities();
       	});
 
       	/**
@@ -197,12 +199,12 @@
         {
         	$.ajax({
         	  method: "POST",
-        	  //url   : "URL",
+        	  url   : "stockQuantity.php",
         	  async : true
-        	}).done(function( aTableResult ) {
+        	}).done(function( aResult ) {
 
         	  // replace content within the search table
-        	  //$('#searchresults').html(aTableResult);
+        	  $('#stockquantity').html(aResult);
         	  
         	});	
         }
