@@ -109,7 +109,7 @@
           					</ul>
           				</div>
           				<div class="panel-footer">
-          					 <button class="btn btn-info btn-group-justified" type="button">
+          					 <button class="btn btn-info btn-group-justified" type="button" onclick="downloadCSVFile()">
           					 		<span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Create CSV File</button>
           				</div>
           			</div>
@@ -207,6 +207,14 @@
         	  $('#stockquantity').html(aResult);
         	  
         	});	
+        }
+
+        /**
+         *  Open a new tab to download the CSV file
+         */
+        function downloadCSVFile()
+        {
+          window.open('downloadCSVFile.php', '_blank');
         }
 
       </script>
