@@ -15,7 +15,37 @@ class QueryDB
     $query = "SELECT * FROM USER 
 	  WHERE (username = '$aUsername')";
 
-	return $query;
+	 return $query;
+  }
+
+  /**
+   *  Finds all transaction data assosciated with a receipt
+   */
+  public static function findTransactionDetails( $aFromDate, $aToDate )
+  {
+    $lFrom = DateTime::createFromFormat('d/m/Y', $aFromDate);
+    $lTo = DateTime::createFromFormat('d/m/Y', $aToDate);
+
+    $aFromDate = $lFrom->format('Y-m-d');
+    $aToDate = $lTo->format('Y-m-d');
+
+    $query = "SELECT PRODUCT.pname, DATE(RECEIPT.transactiondate) AS 'date', SUM(TRANSACTION.quantity) AS 'quantity'
+
+    	FROM RECEIPT
+
+    	INNER JOIN TRANSACTION AS TRANSACTION
+    	ON TRANSACTION.receiptcode = RECEIPT.receiptcode
+
+    	INNER JOIN PRODUCT AS PRODUCT
+    	ON PRODUCT.pid = TRANSACTION.pid
+
+    	WHERE ( DATE(RECEIPT.transactiondate) >= '$aFromDate'
+    			AND DATE(RECEIPT.transactiondate) <= '$aToDate' )
+
+    	GROUP BY PRODUCT.pname, DATE(RECEIPT.transactiondate)
+    	ORDER BY RECEIPT.transactiondate";
+
+    return $query;
   }
 
   /**
@@ -26,6 +56,11 @@ class QueryDB
     $lFrom = DateTime::createFromFormat('d/m/Y', $aFromDate);
     $lTo = DateTime::createFromFormat('d/m/Y', $aToDate);
 
+    // Change time to appropriate range
+    $lFrom->setTime(0, 0, 0);
+    $lTo->setTime(23, 59, 59);
+
+    // change format to acceptable SQL Format
     $aFromDate = $lFrom->format('Y-m-d H:i:s');
     $aToDate = $lTo->format('Y-m-d H:i:s');
 
@@ -39,7 +74,7 @@ class QueryDB
       WHERE (RECEIPT.transactiondate >= '$aFromDate') AND
             (RECEIPT.transactiondate <= '$aToDate') 
 
-      ORDER BY RECEIPT.transactiondate";
+      ORDER BY RECEIPT.transactiondate DESC";
 
     return $query;
   }
