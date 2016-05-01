@@ -147,49 +147,10 @@
 
       		  // Update the current stock quantities list
       		  getCurrentStockQuantities();
+
+      		  // Display Graph with todays transactions
+      		  getTodaysStatisticalData();
       	});
-
-      	/**
-         *  Validate the date identified by the ID and 
-         *  visualy display any errors
-         *  returns bool
-         */
-        function validateDate( aDate )
-        {
-        	if( !Date.parse(aDate.val()) )
-        	{
-        		aDate.removeClass("has-success").addClass("has-error");
-        		return false;
-        	}
-
-        	aDate.removeClass("has-error").addClass("has-success");
-        	return true;
-        }
-
-        /**
-         *	Get statistical data for the period
-         *	Includes: Product name | Amount Sold | Date
-         */
-        function getStatisticalData()
-        {
-        	var lDateFrom = $('#datefrom');
-        	var lDateTo = $('#dateto');
-
-        	if( validateDate(lDateFrom) && validateDate(lDateTo) )
-        	{
-        		$.ajax({
-        		  method: "POST",
-        		  //url   : "URL",
-        		  async : true,
-        		  data  : { datefrom: lDateFrom.val(), dateto: lDateTo.val() }
-        		}).done(function( aTableResult ) {
-
-        		  // replace content within the search table
-        		  //$('#searchresults').html(aTableResult);
-        		  
-        		});
-        	}
-        }
 
         /**
          *	Get the current stock quantities for all 
@@ -222,29 +183,126 @@
       <!-- Set up the graph -->
       <script>
 
-    		new Morris.Line({
-    		  // ID of the element in which to draw the chart.
-    		  element: 'graph',
-    		  // Chart data records -- each entry in this array corresponds to a point on
-    		  // the chart.
-    		  data: [
-    		    { date: '2008-02-10', 'a': 10, 'b': 30, 'c': 0, 'd': 200},
-    		    { date: '2009-03-12', 'a': 20, 'b': 400, 'c': 90, 'd': 50},
-    		    { date: '2010-05-05', 'a': 30, 'b': 1, 'c': 0, 'd': 60},
-    		    { date: '2011-11-14', 'a': 40, 'b': 8, 'c': 50, 'd': 5},
-    		    { date: '2012-02-29', 'a': 50, 'b': 0, 'c': 80, 'd': 2}
-    		  ],
-    		  // The name of the data record attribute that contains x-values.
-    		  xkey: 'date',
-    		  // A list of names of data record attributes that contain y-values.
-    		  ykeys: ['a', 'b', 'c', 'd'],
-    		  // Labels for the ykeys -- will be displayed when you hover over the
-    		  // chart.
-    		  labels: ['Product 1', 'Product 2', 'Product 3', 'Product 4'],
+      	/**
+         *  Validate the date identified by the ID and 
+         *  visualy display any errors
+         *  returns bool
+         */
+        function validateDate( aDate )
+        {
+        	if( !Date.parse(aDate) )
+        	{
+        		return false;
+        	}
 
-    		  // resizes graph when viewport size changes
-    		  resize: true
-    		});
+        	return true;
+        }
+
+        /**
+         *	Get statistical data for the period
+         *	Includes: Product name | Amount Sold | Date
+         */
+        function getStatisticalData()
+        {
+        	var lDateFrom = $('#datefrom');
+        	var lDateTo = $('#dateto');
+
+        	if( validateDate(lDateFrom.val()) && validateDate(lDateTo.val()) )
+        	{
+        		$.ajax({
+        		  method: "POST",
+        		  url   : "getStatisticalData.php",
+        		  async : true,
+        		  data  : { datefrom: lDateFrom.val(), dateto: lDateTo.val() }
+        		}).done(function( aJSONString ) {
+
+        			lDateFrom.prop( "disabled", false );
+        			lDateTo.prop( "disabled", false );
+
+        			updateGraph( aJSONString );
+        		});
+
+        		lDateFrom.prop( "disabled", true );
+        		lDateTo.prop( "disabled", true );
+        	}
+        }
+
+      	/**
+      	 *	Updates the graph with the statistical data
+      	 *	from today
+      	 */
+				function getTodaysStatisticalData()
+        {
+        	var lToday = new Date();
+        	var lTodayString = lToday.getDate() + "/" + (lToday.getMonth()+1) + "/" + lToday.getFullYear();
+        	
+        	$.ajax({
+        	  method: "POST",
+        	  url   : "getStatisticalData.php",
+        	  async : true,
+        	  data  : { datefrom: lTodayString, dateto: lTodayString }
+        	}).done(function( aJSONString ) {
+
+            try
+            {
+              // Validate JSON String
+              //var jsonObject = jQuery.parseJSON( aJSONString );
+              var jsonObject = JSON.parse( aJSONString );
+
+              // update JSON Object
+              updateGraph(jsonObject);
+            }
+            catch(e)
+            {
+              console.log("JSON Object failed to convert");
+            }
+
+        	});
+        }
+        
+			/**
+			 *	Updates the Graph with the provided data 
+			 *	from the Json string
+			 */
+			function updateGraph( aJSONObject )
+			{
+        var json = "";
+        try
+        {
+          json = JSON.parse(aJSONObject);  
+        }
+        catch(e)
+        {
+          console.log(e);
+          console.log("JSON Second Check failed");
+        }
+        
+
+				// Delete contents within Graph id
+				$('#graph').html('');
+
+        if( json != "" )
+        {
+          new Morris.Line({
+      		  // ID of the element in which to draw the chart.
+      		  element: 'graph',
+      		  // Chart data records -- each entry in this array corresponds to a point on
+      		  // the chart.
+      		  data: json.data,
+      		  // The name of the data record attribute that contains x-values.
+      		  xkey: 'date',
+      		  // A list of names of data record attributes that contain y-values.
+      		  ykeys: json.labels,
+      		  // Labels for the ykeys -- will be displayed when you hover over the
+      		  // chart.
+      		  labels: json.labels,
+
+      		  // resizes graph when viewport size changes
+      		  resize: true
+      		});
+        }
+			}
+
       </script>
     </body>
   </html>
