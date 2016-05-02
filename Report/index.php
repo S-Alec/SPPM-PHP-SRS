@@ -104,13 +104,12 @@
           			<div class="panel panel-default">
           				<div class="panel-heading">Stock Quantity</div>
           				<div id="scroll" class="panel-body">
-          					<p><strong>Max size of element will be 500px, for testing purposes 50px are used
-          					</strong></p>
-          					<p>Current Quantity</p>
-          					<p>This is a bunch of nonsense text to test the scrollability of the element. That's right Scrollability! I don't think that's a word...
+          					<ul id="stockquantity" class="list-group">
+         							<!-- AJAX Request for Stock Quantity -->
+          					</ul>
           				</div>
           				<div class="panel-footer">
-          					 <button class="btn btn-info btn-group-justified" type="button">
+          					 <button class="btn btn-info btn-group-justified" type="button" onclick="downloadCSVFile()">
           					 		<span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Create CSV File</button>
           				</div>
           			</div>
@@ -136,7 +135,13 @@
       	$(document).ready(function() {
       		$.fn.datepicker.defaults.format = "dd/mm/yyyy";
 
-      		$('#datefrom').datepicker()
+          var lToday = new Date();
+          var lTodayString = lToday.getDate() + "/" + (lToday.getMonth()+1) + "/" + lToday.getFullYear();
+
+          $('#datefrom').val(lTodayString);
+          $('#dateto').val(lTodayString);
+
+          $('#datefrom').datepicker()
       		  .on('changeDate', function(){
       		    getStatisticalData();
       		  });
@@ -145,7 +150,44 @@
       		  .on('changeDate', function(){
       		    getStatisticalData();
       		  });
+
+      		  // Update the current stock quantities list
+      		  getCurrentStockQuantities();
+
+      		  // Display Graph with todays transactions
+      		  getTodaysStatisticalData();
       	});
+
+        /**
+         *	Get the current stock quantities for all 
+         *	sale items
+         */
+        function getCurrentStockQuantities()
+        {
+        	$.ajax({
+        	  method: "POST",
+        	  url   : "stockQuantity.php",
+        	  async : true
+        	}).done(function( aResult ) {
+
+        	  // replace content within the search table
+        	  $('#stockquantity').html(aResult);
+        	  
+        	});	
+        }
+
+        /**
+         *  Open a new tab to download the CSV file
+         */
+        function downloadCSVFile()
+        {
+          window.open('downloadCSVFile.php', '_blank');
+        }
+
+      </script>
+
+      <!-- Set up the graph -->
+      <script>
 
       	/**
          *  Validate the date identified by the ID and 
@@ -154,13 +196,11 @@
          */
         function validateDate( aDate )
         {
-        	if( !Date.parse(aDate.val()) )
+        	if( !Date.parse(aDate) )
         	{
-        		aDate.removeClass("has-success").addClass("has-error");
         		return false;
         	}
 
-        	aDate.removeClass("has-error").addClass("has-success");
         	return true;
         }
 
@@ -173,68 +213,112 @@
         	var lDateFrom = $('#datefrom');
         	var lDateTo = $('#dateto');
 
-        	if( validateDate(lDateFrom) && validateDate(lDateTo) )
+        	if( validateDate(lDateFrom.val()) && validateDate(lDateTo.val()) )
         	{
         		$.ajax({
         		  method: "POST",
-        		  //url   : "URL",
+        		  url   : "getStatisticalData.php",
         		  async : true,
         		  data  : { datefrom: lDateFrom.val(), dateto: lDateTo.val() }
-        		}).done(function( aTableResult ) {
+        		}).done(function( aJSONString ) {
 
-        		  // replace content within the search table
-        		  //$('#searchresults').html(aTableResult);
-        		  
+        			lDateFrom.prop( "disabled", false );
+        			lDateTo.prop( "disabled", false );
+
+        			updateGraph( aJSONString );
         		});
+
+        		lDateFrom.prop( "disabled", true );
+        		lDateTo.prop( "disabled", true );
         	}
         }
 
-        /**
-         *	Get the current stock quantities for all 
-         *	sale items
-         */
-        function getCurrentStockQuantities()
+      	/**
+      	 *	Updates the graph with the statistical data
+      	 *	from today
+      	 */
+				function getTodaysStatisticalData()
         {
+        	var lToday = new Date();
+        	var lTodayString = lToday.getDate() + "/" + (lToday.getMonth()+1) + "/" + lToday.getFullYear();
+        	
         	$.ajax({
         	  method: "POST",
-        	  //url   : "URL",
-        	  async : true
-        	}).done(function( aTableResult ) {
+        	  url   : "getStatisticalData.php",
+        	  async : true,
+        	  data  : { datefrom: lTodayString, dateto: lTodayString }
+        	}).done(function( aJSONString ) {
 
-        	  // replace content within the search table
-        	  //$('#searchresults').html(aTableResult);
-        	  
-        	});	
+            // update graph
+            updateGraph(aJSONString);
+        	});
         }
+        
+			/**
+			 *	Updates the Graph with the provided data 
+			 *	from the Json string
+			 */
+			function updateGraph( aJSONString )
+			{
+        var json;
+        try
+        {
+          json = JSON.parse(aJSONString);  
+        }
+        catch(e)
+        {
+          console.log(e);
+          console.log("JSON Check failed");
+        }
+        
 
-      </script>
+				// Delete contents within Graph id
+				$('#graph').html('');
 
-      <!-- Set up the graph -->
-      <script>
+        if( typeof json == 'object' )
+        { 
+          new Morris.Line({
+      		  // ID of the element in which to draw the chart.
+      		  element: 'graph',
+      		  // Chart data records -- each entry in this array corresponds to a point on
+      		  // the chart.
+      		  data: json.data,
+      		  // The name of the data record attribute that contains x-values.
+      		  xkey: 'date',
+      		  // A list of names of data record attributes that contain y-values.
+      		  ykeys: json.labels,
+      		  // Labels for the ykeys -- will be displayed when you hover over the
+      		  // chart.
+      		  labels: json.labels,
 
-    		new Morris.Line({
-    		  // ID of the element in which to draw the chart.
-    		  element: 'graph',
-    		  // Chart data records -- each entry in this array corresponds to a point on
-    		  // the chart.
-    		  data: [
-    		    { date: '2008-02-10', 'a': 10, 'b': 30, 'c': 0, 'd': 200},
-    		    { date: '2009-03-12', 'a': 20, 'b': 400, 'c': 90, 'd': 50},
-    		    { date: '2010-05-05', 'a': 30, 'b': 1, 'c': 0, 'd': 60},
-    		    { date: '2011-11-14', 'a': 40, 'b': 8, 'c': 50, 'd': 5},
-    		    { date: '2012-02-29', 'a': 50, 'b': 0, 'c': 80, 'd': 2}
-    		  ],
-    		  // The name of the data record attribute that contains x-values.
-    		  xkey: 'date',
-    		  // A list of names of data record attributes that contain y-values.
-    		  ykeys: ['a', 'b', 'c', 'd'],
-    		  // Labels for the ykeys -- will be displayed when you hover over the
-    		  // chart.
-    		  labels: ['Product 1', 'Product 2', 'Product 3', 'Product 4'],
+      		  // resizes graph when viewport size changes
+      		  resize: true
+      		});
+        }
+        else
+        {
+          var lTextFrom = $('#dateto').val();
 
-    		  // resizes graph when viewport size changes
-    		  resize: true
-    		});
+          new Morris.Line({
+            // ID of the element in which to draw the chart.
+            element: 'graph',
+            // Chart data records -- each entry in this array corresponds to a point on
+            // the chart.
+            data: [{date: lTextFrom}],
+            // The name of the data record attribute that contains x-values.
+            xkey: 'date',
+            // A list of names of data record attributes that contain y-values.
+            ykeys: [0],
+            // Labels for the ykeys -- will be displayed when you hover over the
+            // chart.
+            labels: [0],
+
+            // resizes graph when viewport size changes
+            resize: true
+          });
+        }
+			}
+
       </script>
     </body>
   </html>
