@@ -65,7 +65,7 @@ $(document).ready(function() {
     $modalTxtUsername.val('');
     $modalTxtLastname.val('');
     $modalCbbRole.val('');
-    modalTxtPassword.val('');
+    $modalTxtPassword.val('');
     $modalUserForm.modal('show');
   });
 

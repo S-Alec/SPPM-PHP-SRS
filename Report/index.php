@@ -135,7 +135,13 @@
       	$(document).ready(function() {
       		$.fn.datepicker.defaults.format = "dd/mm/yyyy";
 
-      		$('#datefrom').datepicker()
+          var lToday = new Date();
+          var lTodayString = lToday.getDate() + "/" + (lToday.getMonth()+1) + "/" + lToday.getFullYear();
+
+          $('#datefrom').val(lTodayString);
+          $('#dateto').val(lTodayString);
+
+          $('#datefrom').datepicker()
       		  .on('changeDate', function(){
       		    getStatisticalData();
       		  });
@@ -243,20 +249,8 @@
         	  data  : { datefrom: lTodayString, dateto: lTodayString }
         	}).done(function( aJSONString ) {
 
-            try
-            {
-              // Validate JSON String
-              //var jsonObject = jQuery.parseJSON( aJSONString );
-              var jsonObject = JSON.parse( aJSONString );
-
-              // update JSON Object
-              updateGraph(jsonObject);
-            }
-            catch(e)
-            {
-              console.log("JSON Object failed to convert");
-            }
-
+            // update graph
+            updateGraph(aJSONString);
         	});
         }
         
@@ -264,25 +258,24 @@
 			 *	Updates the Graph with the provided data 
 			 *	from the Json string
 			 */
-			function updateGraph( aJSONObject )
+			function updateGraph( aJSONString )
 			{
-        var json = "";
+        var json;
         try
         {
-          json = JSON.parse(aJSONObject);  
+          json = JSON.parse(aJSONString);  
         }
         catch(e)
         {
           console.log(e);
-          console.log("JSON Second Check failed");
+          console.log("JSON Check failed");
         }
-        
 
 				// Delete contents within Graph id
 				$('#graph').html('');
 
-        if( json != "" )
-        {
+        if( typeof json == 'object' )
+        { 
           new Morris.Line({
       		  // ID of the element in which to draw the chart.
       		  element: 'graph',
@@ -300,6 +293,28 @@
       		  // resizes graph when viewport size changes
       		  resize: true
       		});
+        }
+        else
+        {
+          var lTextFrom = $('#dateto').val();
+
+          new Morris.Line({
+            // ID of the element in which to draw the chart.
+            element: 'graph',
+            // Chart data records -- each entry in this array corresponds to a point on
+            // the chart.
+            data: [{date: lTextFrom}],
+            // The name of the data record attribute that contains x-values.
+            xkey: 'date',
+            // A list of names of data record attributes that contain y-values.
+            ykeys: [0],
+            // Labels for the ykeys -- will be displayed when you hover over the
+            // chart.
+            labels: [0],
+
+            // resizes graph when viewport size changes
+            resize: true
+          });
         }
 			}
 
